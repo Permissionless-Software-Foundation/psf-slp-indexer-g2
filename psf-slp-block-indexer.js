@@ -78,7 +78,7 @@ async function start () {
     // } while (nextBlockHeight < 543410) // First send
     // } while (nextBlockHeight < 543376) // First Genesis
     // } while (nextBlockHeight < 543614) // First Mint
-    } while (nextBlockHeight < 700003)
+    } while (nextBlockHeight < 595539)
 
     console.log('\n\nIndexing complete.')
     process.exit(0)

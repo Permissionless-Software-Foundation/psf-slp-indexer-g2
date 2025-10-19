@@ -319,7 +319,7 @@ class IndexBlocks {
         console.log(`${tx} already processed. Skipping.`)
         return false
       } catch (err) {
-        console.log(`Error getting tx ${tx} from processed database.`, err.message)
+        // console.log(`Error getting tx ${tx} from processed database.`, err.message)
         /* exit quietly */
       }
 
