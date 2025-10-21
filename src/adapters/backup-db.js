@@ -17,6 +17,7 @@ class DbCtrl {
 
     // Bind 'this' object to all subfunctions
     this.backupDb = this.backupDb.bind(this)
+    this.rollbackDb = this.rollbackDb.bind(this)
   }
 
   async backupDb (height, epoch) {
@@ -26,6 +27,17 @@ class DbCtrl {
       return true
     } catch (err) {
       console.error('Error in DbCtrl.backupDb(): ', err.message)
+      throw err
+    }
+  }
+
+  async rollbackDb (height) {
+    try {
+      await this.axios.post(`${this.config.psfSlpDbUrl}/level/restore`, { height })
+
+      return true
+    } catch (err) {
+      console.error('Error in DbCtrl.rollbackDb(): ', err.message)
       throw err
     }
   }

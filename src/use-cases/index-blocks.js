@@ -248,8 +248,19 @@ class IndexBlocks {
       // same problematic backup over and over.
       blockHeight = blockHeight - 1
 
-      console.log(`Block height: ${blockHeight}`)
+      console.log(`Error in block height: ${blockHeight}`)
       console.log(`errMsg: ${errMsg}`)
+
+      // Round down to nearest 1000 blocks
+      const rollbackHeight = Math.floor(blockHeight / 1000) * 1000
+      console.log(`Rolling back to block height: ${rollbackHeight}`)
+
+      try {
+        await this.adapters.dbCtrl.rollbackDb(rollbackHeight)
+      } catch (err) {
+        console.log('rollback API threw an error: ', err.message)
+        /* exit quietly */
+      }
 
       console.log('This is where the database would roll back to the previous snapshot.')
 
