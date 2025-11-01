@@ -108,8 +108,46 @@ async function start () {
     await adapters.zmq.connect()
     console.log('Connected to ZMQ port of full node.')
 
-    console.log('\n\nIndexing complete.')
-    process.exit(0)
+    // TODO: Enable TX indexer here.
+
+    // Enter permanent loop, processing ZMQ input.
+    let loopCnt = 0
+    do {
+      // TODO: add getBlockCounty to a auto-retry in case it fails.
+      let blockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
+      // console.log('Current chain block height: ', blockHeight)
+      // console.log(`status.syncedBlockHeight: ${status.syncedBlockHeight}`)
+
+      // On a new block, process it.
+      const block = adapters.zmq.getBlock()
+      if (block) {
+        console.log('block: ', block)
+
+        const blockHeader = await queue.addToQueue(adapters.rpc.getBlockHeader, block.hash)
+        blockHeight = blockHeader.height
+        console.log(`processing block ${blockHeight}`)
+
+        // Update the status DB.
+        status.syncedBlockHeight = blockHeight
+        status.chainBlockHeight = blockHeight
+        await adapters.statusDb.updateStatus(status)
+
+        // Process the block.
+        await useCases.indexBlocks.processBlock(blockHeight)
+      }
+
+      // Periodically print to the console to indicate that the ZMQ is being
+      // monitored.
+      loopCnt++
+      if (loopCnt > 1000) {
+        loopCnt = 0
+        const now = new Date()
+        console.log(`Checked ZMQ. ${now.toLocaleString()}, block height: ${blockHeight}`)
+      }
+
+      // Wait a few seconds between loops.
+      await useCases.utils.sleep(50)
+    } while (1)
   } catch (err) {
     console.error('Error in psf-slp-block-indexer.js/start(): ', err)
     process.exit(1)

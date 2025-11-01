@@ -8,6 +8,7 @@ import RetryQueue from '@chris.troutner/retry-queue'
 // Local libraries
 import IndexBlocks from './index-blocks.js'
 import State from './state.js'
+import Utils from './utils.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -21,6 +22,7 @@ class UseCases {
     this.indexBlocks = new IndexBlocks({ adapters: this.adapters })
     this.retryQueue = new RetryQueue({})
     this.state = new State({ adapters: this.adapters })
+    this.utils = new Utils()
 
     // Bind 'this' object to all subfunctions
     this.initUseCases = this.initUseCases.bind(this)
