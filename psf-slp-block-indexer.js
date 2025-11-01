@@ -32,12 +32,14 @@ async function start () {
     await controllers.initControllers()
 
     const queue = new RetryQueue()
+    let indexState = 'phase0'
 
     console.log('Starting SLP block indexer...')
 
     const status = await useCases.state.getStatus()
     console.log('Indexer State: ', status)
     console.log('')
+    console.log('Starting Phase 1: Initial Block Download (IBD) - indexing to the tip of the chain.')
 
     // const blockData = await useCases.indexBlocks.processBlock(status.syncedBlockHeight)
     // console.log('Block data: ', blockData)
@@ -57,6 +59,10 @@ async function start () {
       } else {
         console.log(`Block ${nextBlockHeight} processed in ${blockProcessTime / 1000} seconds.`)
       }
+
+      // Change phase after processing first block. This prevents unneeded
+      // zipping of the database after a restart.
+      indexState = 'phase1'
 
       // Update the synced block height.
       nextBlockHeight = await useCases.state.updateIndexedBlockHeight({ lastIndexedBlockHeight: nextBlockHeight })
@@ -89,6 +95,18 @@ async function start () {
     // } while (nextBlockHeight < 598098)
     // } while (nextBlockHeight < 922965)
     } while (nextBlockHeight < biggestBlockHeight)
+
+    // Debugging: state the current state of the indexer.
+    console.log(`\n\nLeaving ${indexState}`)
+    indexState = 'phase2'
+
+    console.log(
+      `\n\nIBD has completed. Last block synced: ${nextBlockHeight - 1}\n`
+    )
+
+    // Start connection to ZMQ/websocket interface on full node.
+    await adapters.zmq.connect()
+    console.log('Connected to ZMQ port of full node.')
 
     console.log('\n\nIndexing complete.')
     process.exit(0)

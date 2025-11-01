@@ -18,6 +18,7 @@ import Transaction from './transaction.js'
 import Webhook from './webhook.js'
 import Blacklist from './blacklist.js'
 import DbCtrl from './backup-db.js'
+import ZMQ from './zmq.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -35,6 +36,7 @@ class Adapters {
     this.webhook = new Webhook()
     this.blacklist = new Blacklist()
     this.dbCtrl = new DbCtrl()
+    this.zmq = new ZMQ()
 
     // Bind 'this' object to all subfunctions
     this.initAdapters = this.initAdapters.bind(this)
