@@ -13,6 +13,7 @@
 import Adapters from './src/adapters/adapters-index.js'
 import UseCases from './src/use-cases/use-cases-index.js'
 import Controllers from './src/controllers/controllers-index.js'
+import RetryQueue from '@chris.troutner/retry-queue'
 
 const EPOCH = 1000 // blocks between backups
 
@@ -30,6 +31,8 @@ async function start () {
     const controllers = new Controllers({ useCases, adapters })
     await controllers.initControllers()
 
+    const queue = new RetryQueue()
+
     console.log('Starting SLP block indexer...')
 
     const status = await useCases.state.getStatus()
@@ -40,6 +43,7 @@ async function start () {
     // console.log('Block data: ', blockData)
 
     let nextBlockHeight = status.syncedBlockHeight + 1
+    let biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
     do {
       const start = new Date()
 
@@ -74,12 +78,17 @@ async function start () {
         console.log(`\n\nCreating zip archive of database at block ${nextBlockHeight}\n`)
         await adapters.dbCtrl.backupDb(nextBlockHeight, EPOCH)
       }
+
+      // Get the block height of the tip of the chain.
+      biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
+
     // } while (nextBlockHeight < 589808) // First NFT Genesis tx
     // } while (nextBlockHeight < 543410) // First send
     // } while (nextBlockHeight < 543376) // First Genesis
     // } while (nextBlockHeight < 543614) // First Mint
     // } while (nextBlockHeight < 598098)
-    } while (nextBlockHeight < 922965)
+    // } while (nextBlockHeight < 922965)
+    } while (nextBlockHeight < biggestBlockHeight)
 
     console.log('\n\nIndexing complete.')
     process.exit(0)
