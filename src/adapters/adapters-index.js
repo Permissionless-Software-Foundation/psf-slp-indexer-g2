@@ -19,6 +19,7 @@ import Webhook from './webhook.js'
 import Blacklist from './blacklist.js'
 import DbCtrl from './backup-db.js'
 import ZMQ from './zmq.js'
+import TxIndexerAdapter from './tx-indexer.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -37,6 +38,7 @@ class Adapters {
     this.blacklist = new Blacklist()
     this.dbCtrl = new DbCtrl()
     this.zmq = new ZMQ()
+    this.txIndexerAdapter = new TxIndexerAdapter()
 
     // Bind 'this' object to all subfunctions
     this.initAdapters = this.initAdapters.bind(this)

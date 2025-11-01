@@ -9,11 +9,13 @@
 
 */
 
+// Global npm libraries
+import RetryQueue from '@chris.troutner/retry-queue'
+
 // Local libraries
 import Adapters from './src/adapters/adapters-index.js'
 import UseCases from './src/use-cases/use-cases-index.js'
 import Controllers from './src/controllers/controllers-index.js'
-import RetryQueue from '@chris.troutner/retry-queue'
 
 const EPOCH = 1000 // blocks between backups
 
@@ -108,7 +110,9 @@ async function start () {
     await adapters.zmq.connect()
     console.log('Connected to ZMQ port of full node.')
 
-    // TODO: Enable TX indexer here.
+    // Enable TX indexer here.
+    await adapters.txIndexerAdapter.startTxIndexer()
+    console.log('TX indexer started.')
 
     // Enter permanent loop, processing ZMQ input.
     let loopCnt = 0

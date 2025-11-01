@@ -8,6 +8,7 @@
 
 // Local libraries
 import Keyboard from './keyboard.js'
+import TxRESTController from './tx-rest-api.js'
 
 class Controllers {
   constructor (localConfig = {}) {
@@ -23,13 +24,21 @@ class Controllers {
 
     // Encapsulate dependencies
     this.keyboard = new Keyboard(localConfig)
+    this.txRESTController = new TxRESTController(localConfig)
 
     // Bind 'this' object to all subfunctions.
     this.initControllers = this.initControllers.bind(this)
+    this.startTxRESTController = this.startTxRESTController.bind(this)
   }
 
+  // Initialize the controllers at startup.
   async initControllers () {
     this.keyboard.initKeyboard()
+  }
+
+  // This is consumed by psf-slp-tx-indexer.js to start the TX REST controller.
+  async startTxRESTController () {
+    this.txRESTController.start()
   }
 }
 
