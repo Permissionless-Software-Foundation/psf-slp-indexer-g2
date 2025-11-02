@@ -22,15 +22,15 @@ class PTxDb {
   }
 
   async getPTx (ptxKey) {
-    try {
-      const response = await this.axios.get(`${this.config.psfSlpDbUrl}/level/ptx/${ptxKey}`)
-      // console.log('Response: ', response.data)
+    // try {
+    const response = await this.axios.get(`${this.config.psfSlpDbUrl}/level/ptx/${ptxKey}`)
+    // console.log('Response: ', response.data)
 
-      return response.data
-    } catch (err) {
-      console.error('Error in PTxDb.getPTx(): ', err.message)
-      throw err
-    }
+    return response.data
+    // } catch (err) {
+    //   // console.error('Error in PTxDb.getPTx(): ', err.message)
+    //   throw err
+    // }
   }
 
   async createPTx (ptxKey, ptxData) {

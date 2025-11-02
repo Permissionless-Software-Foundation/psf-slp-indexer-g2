@@ -143,14 +143,14 @@ async function start () {
       // Periodically print to the console to indicate that the ZMQ is being
       // monitored.
       loopCnt++
-      if (loopCnt > 1000) {
+      if (loopCnt > 100) {
         loopCnt = 0
         const now = new Date()
         console.log(`Checked ZMQ. ${now.toLocaleString()}, block height: ${blockHeight}`)
       }
 
       // Wait a few seconds between loops.
-      await useCases.utils.sleep(50)
+      await useCases.utils.sleep(500)
     } while (1)
   } catch (err) {
     console.error('Error in psf-slp-block-indexer.js/start(): ', err)

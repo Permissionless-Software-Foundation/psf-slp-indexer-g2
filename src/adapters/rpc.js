@@ -81,8 +81,10 @@ class RPC {
   }
 
   // Get the contents of a block, given its block hash.
-  async getBlock (hash, verbose = true) {
+  async getBlock (inObj = {}) {
     try {
+      const { hash, verbose = true } = inObj
+
       if (!hash) throw new Error('Block hash must be provided')
 
       // Axios options
@@ -104,8 +106,10 @@ class RPC {
   }
 
   // Given a block height, return the block hash matching that block height.
-  async getBlockHash (height) {
+  async getBlockHash (inObj = {}) {
     try {
+      const { height } = inObj
+
       if (!height) throw new Error('Block height must be provided')
 
       // Axios options

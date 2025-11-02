@@ -2,6 +2,9 @@
   Business logic for indexing blocks.
 */
 
+// Global npm libraries
+import RetryQueue from '@chris.troutner/retry-queue'
+
 // Local libraries
 import FilterBlock from './filter-block.js'
 import Genesis from './tx-types/genesis.js'
@@ -30,6 +33,7 @@ class IndexBlocks {
     this.nftGenesis = new NftGenesis({ adapters: this.adapters })
     this.dag = new DAG({ adapters: this.adapters })
     this.RETRY_CNT = RETRY_CNT
+    this.retryQueue = new RetryQueue()
 
     // Bind 'this' object to all subfunctions
     this.processBlock = this.processBlock.bind(this)
@@ -43,11 +47,13 @@ class IndexBlocks {
   async processBlock (blockHeight) {
     try {
       // Get the block hash for the current block height.
-      const blockHash = await this.adapters.rpc.getBlockHash(blockHeight)
+      // const blockHash = await this.adapters.rpc.getBlockHash(blockHeight)
+      const blockHash = await this.retryQueue.addToQueue(this.adapters.rpc.getBlockHash, { height: blockHeight })
       // console.log("blockHash: ", blockHash);
 
       // Now get the actual data stored in that block.
-      const block = await this.adapters.rpc.getBlock(blockHash)
+      // const block = await this.adapters.rpc.getBlock(blockHash)
+      const block = await this.retryQueue.addToQueue(this.adapters.rpc.getBlock, { hash: blockHash })
       // console.log('block: ', block)
 
       // Transactions in the block.
@@ -380,7 +386,7 @@ class IndexBlocks {
         }
       } catch (err) {
         /* exit quietly */
-        console.log(`Error getting tx ${tx} from cache.`, err.message)
+        // console.log(`Error getting tx ${tx} from cache.`, err.message)
 
         // TODO: check if this TX is a Pin Claim.
         // Check if this transaction is a Claim.
