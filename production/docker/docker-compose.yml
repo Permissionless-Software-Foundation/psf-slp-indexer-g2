@@ -1,0 +1,23 @@
+# Start the service with the command 'docker-compose up -d'
+
+#version: '3.9'
+
+services:
+  slp-db:
+    build: ./slp-db
+    container_name: slp-db
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    #mem_limit: 500mb
+    #links:
+    #  - mongo-slp-indexer
+    ports:
+      - '5010:5010' # <host port>:<container port>
+    volumes:
+      - ../data/ipfsdata:/home/safeuser/psf-slp-db/.ipfsdata
+      - ../data/leveldb:/home/safeuser/psf-slp-db/leveldb
+      - ./slp-db/start-slp-db.sh:/home/safeuser/psf-slp-db/start-slp-db.sh
+    restart: always
