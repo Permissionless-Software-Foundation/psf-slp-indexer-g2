@@ -35,3 +35,15 @@ services:
     volumes:
       - ./tx-indexer/start-tx-indexer.sh:/home/safeuser/psf-slp-indexer-g2/start-tx-indexer.sh
     restart: always
+
+  block-indexer:
+    build: ./block-indexer
+    container_name: block-indexer
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    volumes:
+      - ./block-indexer/start-block-indexer.sh:/home/safeuser/psf-slp-indexer-g2/start-block-indexer.sh
+    restart: always
