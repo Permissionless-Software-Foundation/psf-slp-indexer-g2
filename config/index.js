@@ -1,5 +1,8 @@
 /*
   Configuration for the psf-slp-block-indexer.
+
+  The default values in this file are tuned for local development. The production Docker
+  containers have their own .env-local file that needs to be copied to .env and customized.
 */
 
 import 'dotenv/config'
@@ -27,6 +30,7 @@ export default {
         '7f8889682d57369ed0e32336f8b7e0ffec625a35cca183f4e81fde4e71a538a1',
         // SOUR
         '6448381f9649ecacd8c30189cfbfee71a91b6b9738ea494fe33f8b8b51cbfca0'
-      ]
+      ],
 
+  txRestApiPort: process.env.TX_REST_API_PORT ? parseInt(process.env.TX_REST_API_PORT) : 5454
 }

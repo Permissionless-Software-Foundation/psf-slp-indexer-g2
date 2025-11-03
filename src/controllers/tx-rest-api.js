@@ -6,8 +6,9 @@
 import express from 'express'
 
 // Local libraries.
+import config from '../../config/index.js'
 
-const port = 5454 // TX REST API port
+const port = config.txRestApiPort // TX REST API port
 
 class TxRESTController {
   constructor (localConfig = {}) {
