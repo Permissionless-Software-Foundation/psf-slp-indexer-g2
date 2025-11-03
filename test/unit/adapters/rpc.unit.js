@@ -97,7 +97,7 @@ describe('#rpc.js', () => {
       const hash =
         '0000000000000000008e8d83cba6d45a9314bc2ef4538d4e0577c6bed8593536'
 
-      const result = await uut.getBlock(hash)
+      const result = await uut.getBlock({ hash })
       // console.log(`result: ${util.inspect(result)}`)
 
       assert.equal(result.height, 600000)
@@ -111,7 +111,7 @@ describe('#rpc.js', () => {
         const hash =
           '0000000000000000008e8d83cba6d45a9314bc2ef4538d4e0577c6bed8593536'
 
-        await uut.getBlock(hash)
+        await uut.getBlock({ hash })
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -132,14 +132,14 @@ describe('#rpc.js', () => {
 
   describe('#getBlockHash', () => {
     it('should get the hash of a block', async () => {
-      // const height = 600000
+      const height = 600000
       const hash =
         '0000000000000000008e8d83cba6d45a9314bc2ef4538d4e0577c6bed8593536'
 
       // Mock the RPC call for unit tests.
       sandbox.stub(uut.axios, 'request').resolves({ data: { result: hash } })
 
-      const result = await uut.getBlockHash(hash)
+      const result = await uut.getBlockHash({ height })
       // console.log(`result: ${util.inspect(result)}`)
 
       assert.equal(result, hash)
@@ -152,7 +152,7 @@ describe('#rpc.js', () => {
 
         const height = 600000
 
-        await uut.getBlockHash(height)
+        await uut.getBlockHash({ height })
 
         assert.fail('Unexpected code path')
       } catch (err) {

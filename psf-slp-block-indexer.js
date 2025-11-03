@@ -9,7 +9,6 @@
 
 */
 
-
 // Global npm libraries
 import RetryQueue from '@chris.troutner/retry-queue'
 import 'dotenv/config'
