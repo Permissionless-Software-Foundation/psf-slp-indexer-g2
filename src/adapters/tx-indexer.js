@@ -18,7 +18,7 @@ class TxIndexerAdapter {
 
   async startTxIndexer () {
     try {
-      const response = await this.axios.get('http://localhost:5454/tx-start')
+      const response = await this.axios.get(`http://localhost:${this.config.txRestApiPort}/tx-start`)
       console.log('Response: ', response.data)
 
       return true
