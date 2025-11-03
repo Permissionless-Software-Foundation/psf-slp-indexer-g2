@@ -34,6 +34,7 @@ services:
       - '5454:5454' # <host port>:<container port>
     volumes:
       - ./tx-indexer/start-tx-indexer.sh:/home/safeuser/psf-slp-indexer-g2/start-tx-indexer.sh
+      - ./tx-indexer/.env:/home/safeuser/psf-slp-indexer-g2/.env
     restart: always
 
   block-indexer:
@@ -46,4 +47,5 @@ services:
         max-file: '10'
     volumes:
       - ./block-indexer/start-block-indexer.sh:/home/safeuser/psf-slp-indexer-g2/start-block-indexer.sh
+      - ./block-indexer/.env:/home/safeuser/psf-slp-indexer-g2/.env
     restart: always
