@@ -11,6 +11,7 @@
 
 // Global npm libraries
 import RetryQueue from '@chris.troutner/retry-queue'
+import 'dotenv/config'
 
 // Local libraries
 import Adapters from './src/adapters/adapters-index.js'

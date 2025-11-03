@@ -2,8 +2,10 @@
   Configuration for the psf-slp-block-indexer.
 */
 
+import 'dotenv/config'
+
 export default {
-  psfSlpDbUrl: 'http://localhost:5020',
+  psfSlpDbUrl: process.env.PSF_SLP_DB_URL ? process.env.PSF_SLP_DB_URL : 'http://localhost:5020',
 
   // RPC connection information, used by the SLP indexer to communicate with the
   // full node.
