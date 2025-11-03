@@ -15,9 +15,23 @@ services:
     #links:
     #  - mongo-slp-indexer
     ports:
-      - '5010:5010' # <host port>:<container port>
+      - '5020:5020' # <host port>:<container port>
     volumes:
       - ../data/ipfsdata:/home/safeuser/psf-slp-db/.ipfsdata
       - ../data/leveldb:/home/safeuser/psf-slp-db/leveldb
       - ./slp-db/start-slp-db.sh:/home/safeuser/psf-slp-db/start-slp-db.sh
+    restart: always
+
+  tx-indexer:
+    build: ./tx-indexer
+    container_name: tx-indexer
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    ports:
+      - '5454:5454' # <host port>:<container port>
+    volumes:
+      - ./tx-indexer/start-tx-indexer.sh:/home/safeuser/psf-slp-indexer-g2/start-tx-indexer.sh
     restart: always
