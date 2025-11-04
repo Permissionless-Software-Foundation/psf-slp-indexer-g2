@@ -50,55 +50,59 @@ async function start () {
     let nextBlockHeight = status.syncedBlockHeight + 1
     let biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
     console.log('biggestBlockHeight: ', biggestBlockHeight)
-    do {
-      const start = new Date()
+    if (nextBlockHeight <= biggestBlockHeight) {
+      do {
+        const start = new Date()
 
-      await useCases.indexBlocks.processBlock(nextBlockHeight)
+        await useCases.indexBlocks.processBlock(nextBlockHeight)
 
-      // Report the time to process the block
-      const end = new Date()
-      const blockProcessTime = end.getTime() - start.getTime()
-      if (blockProcessTime > 60000) {
-        console.log(`Block ${nextBlockHeight} processed in ${blockProcessTime / 1000 / 60} minutes.`)
-      } else {
-        console.log(`Block ${nextBlockHeight} processed in ${blockProcessTime / 1000} seconds.`)
-      }
+        // Report the time to process the block
+        const end = new Date()
+        const blockProcessTime = end.getTime() - start.getTime()
+        if (blockProcessTime > 60000) {
+          console.log(`Block ${nextBlockHeight} processed in ${blockProcessTime / 1000 / 60} minutes.`)
+        } else {
+          console.log(`Block ${nextBlockHeight} processed in ${blockProcessTime / 1000} seconds.`)
+        }
 
-      // Change phase after processing first block. This prevents unneeded
-      // zipping of the database after a restart.
-      indexState = 'phase1'
+        // Change phase after processing first block. This prevents unneeded
+        // zipping of the database after a restart.
+        indexState = 'phase1'
 
-      // Update the synced block height.
-      nextBlockHeight = await useCases.state.updateIndexedBlockHeight({ lastIndexedBlockHeight: nextBlockHeight })
+        // Update the synced block height.
+        nextBlockHeight = await useCases.state.updateIndexedBlockHeight({ lastIndexedBlockHeight: nextBlockHeight })
 
-      // Shut down elegantly if the 'q' key was detected.
-      const shouldStop = controllers.keyboard.stopStatus()
-      // console.log('shouldStop: ', shouldStop)
-      if (shouldStop) {
-        console.log(
-          `'q' key detected. Stopping indexing. Last block processed was ${
-            nextBlockHeight
-          }`
-        )
-        process.exit(1)
-      }
+        // Shut down elegantly if the 'q' key was detected.
+        const shouldStop = controllers.keyboard.stopStatus()
+        // console.log('shouldStop: ', shouldStop)
+        if (shouldStop) {
+          console.log(
+            `'q' key detected. Stopping indexing. Last block processed was ${
+              nextBlockHeight
+            }`
+          )
+          process.exit(1)
+        }
 
-      // Create a zip-file backup every 'epoch' of blocks
-      if (nextBlockHeight % EPOCH === 0) {
-        console.log(`\n\nCreating zip archive of database at block ${nextBlockHeight}\n`)
-        await adapters.dbCtrl.backupDb(nextBlockHeight, EPOCH)
-      }
+        // Create a zip-file backup every 'epoch' of blocks
+        if (nextBlockHeight % EPOCH === 0) {
+          console.log(`\n\nCreating zip archive of database at block ${nextBlockHeight}\n`)
+          await adapters.dbCtrl.backupDb(nextBlockHeight, EPOCH)
+        }
 
-      // Get the block height of the tip of the chain.
-      biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
+        // Get the block height of the tip of the chain.
+        biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
 
-    // } while (nextBlockHeight < 589808) // First NFT Genesis tx
-    // } while (nextBlockHeight < 543410) // First send
-    // } while (nextBlockHeight < 543376) // First Genesis
-    // } while (nextBlockHeight < 543614) // First Mint
-    // } while (nextBlockHeight < 598098)
-    // } while (nextBlockHeight < 922965)
-    } while (nextBlockHeight < biggestBlockHeight)
+      // } while (nextBlockHeight < 589808) // First NFT Genesis tx
+      // } while (nextBlockHeight < 543410) // First send
+      // } while (nextBlockHeight < 543376) // First Genesis
+      // } while (nextBlockHeight < 543614) // First Mint
+      // } while (nextBlockHeight < 598098)
+      // } while (nextBlockHeight < 922965)
+      } while (nextBlockHeight < biggestBlockHeight)
+    } else {
+      console.log(`Indexer is already at the tip of the chain (block ${status.syncedBlockHeight}). Skipping IBD phase.`)
+    }
 
     // Debugging: state the current state of the indexer.
     console.log(`\n\nLeaving ${indexState}`)
