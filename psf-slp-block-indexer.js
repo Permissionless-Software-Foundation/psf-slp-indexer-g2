@@ -49,6 +49,7 @@ async function start () {
 
     let nextBlockHeight = status.syncedBlockHeight + 1
     let biggestBlockHeight = await queue.addToQueue(adapters.rpc.getBlockCount, {})
+    console.log('biggestBlockHeight: ', biggestBlockHeight)
     do {
       const start = new Date()
 
