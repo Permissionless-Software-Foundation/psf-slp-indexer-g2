@@ -1,5 +1,5 @@
 /*
-  Unit tests for rpc.js library
+  Unit tests for rpc.js library.
 */
 
 import { assert } from 'chai'

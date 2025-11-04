@@ -180,6 +180,13 @@ class Send {
 
           tokenData.nftHolder = addr
         }
+
+        // console.log('send.js/updateTokenStats() tokenData: ', JSON.stringify(tokenData, null, 2))
+        // If the token is a Type 1 'simple NFT', save address of current holder of the NFT.
+        if (tokenData.type === 1 && tokenData.decimals === 0 && parseInt(tokenData.totalMinted.toString()) === 1) {
+          const addr = txData.vout[1].scriptPubKey.addresses[0]
+          tokenData.nftHolder = addr
+        }
       }
 
       // console.log(`txInfo: ${JSON.stringify(txInfo, null, 2)}`)
