@@ -4,8 +4,8 @@
   "description": "Indexes blocks for SLP tokens. Stores data in psf-slp-db.",
   "main": "psf-slp-block-indexer.js",
   "scripts": {
-    "block-indexer": "node psf-slp-block-indexer.js",
-    "tx-indexer": "node psf-slp-tx-indexer.js",
+    "block-indexer": "node --max-old-space-size=8192  psf-slp-block-indexer.js",
+    "tx-indexer": "node --max-old-space-size=4096  psf-slp-tx-indexer.js",
     "test": "c8 --reporter=text mocha --exit --recursive test/unit/",
     "lint": "standard --env mocha --fix"
   },
