@@ -26,6 +26,8 @@ export default {
         'dd21be4532d93661e8ffe16db6535af0fb8ee1344d1fef81a193e2b4cfa9fbc9',
         // TribeOS
         '0df768b5485c72645de069b68f66d02205c26f827c608ef5ffa976266d753d50',
+        // TribeOS Ghost Token
+        'aa1cdd36ab9f4aa6284e5ff370421305887f845f076c38689bd912e372058c11',
         // Honk
         '7f8889682d57369ed0e32336f8b7e0ffec625a35cca183f4e81fde4e71a538a1',
         // SOUR
