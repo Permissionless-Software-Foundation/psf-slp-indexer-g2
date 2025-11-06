@@ -79,13 +79,13 @@ class DAG {
       // Loop through each input that represents tokens.
       for (let i = 0; i < txData.vin.length; i++) {
         const thisVin = txData.vin[i]
-        console.log(`thisVin: ${JSON.stringify(thisVin, null, 2)}`)
+        // console.log(`thisVin: ${JSON.stringify(thisVin, null, 2)}`)
 
         // Evaluate if the token IDs match.
         // Dev Note: If neither the Vin or the txData have a tokenId property,
         // then sameTokenId will evaluate to true.
         const sameTokenId = thisVin.tokenId === txData.tokenId
-        console.log('sameTokenId: ', sameTokenId)
+        // console.log('sameTokenId: ', sameTokenId)
 
         // If the input is not colored as a token, then skip it.
         // Corner case: If a mint baton, qty is 0 but still a valid token tx.
@@ -96,7 +96,7 @@ class DAG {
 
         // Phase 1: retrieve the parent TX.
         const parentTx = await this.adapters.cache.get(thisVin.txid)
-        console.log(`parentTx: ${JSON.stringify(parentTx, null, 2)}`)
+        // console.log(`parentTx: ${JSON.stringify(parentTx, null, 2)}`)
 
         // Phase 2: Evaluate relationship between parent and child.
 
