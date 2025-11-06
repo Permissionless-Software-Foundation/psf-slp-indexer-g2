@@ -67,7 +67,7 @@ class DAG {
 
       // If this is the genesis TX, then exit immediately.
       // This happens when evaluating the first send TX after a genesis TX.
-      if (txid === tokenId) {
+      if (txid === tokenId || (txData.txType === 'GENESIS' && txData.tokenId === tokenId)) {
         // TODO: Should decodeOpReturn() be run on this txid, to ensure it
         // is valid via SLP OP_RETURN rules?
 
@@ -147,7 +147,7 @@ class DAG {
           )
 
           //
-        } else if (parentTx.txid === tokenId) {
+        } else if (parentTx.txid === tokenId || (parentTx.txType === 'GENESIS' && parentTx.tokenId === tokenId)) {
           // Handle corner case with NFTs. This is when the Genesis TX does
           // not originate from a Group (Type 128) token.
           const isNFT = parentTx.tokenType !== 1
