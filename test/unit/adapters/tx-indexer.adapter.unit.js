@@ -33,11 +33,10 @@ describe('#tx-indexer', () => {
       // Mock dependencies - error should be caught and logged, not thrown
       sandbox.stub(uut.axios, 'get').rejects(new Error('test error'))
 
-      const result = await uut.startTxIndexer()
+      await uut.startTxIndexer()
 
       // Should return undefined or false, not throw
       assert.isOk(true) // Just verify it doesn't throw
     })
   })
 })
-

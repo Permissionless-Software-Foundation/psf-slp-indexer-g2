@@ -131,12 +131,11 @@ describe('#cache.js', () => {
   describe('#delete', () => {
     it('should delete key from cache', () => {
       uut.put('test', { data: 'value' })
-      assert.isOk(uut.cache['test'])
+      assert.isOk(uut.cache.test)
 
       uut.delete('test')
 
-      assert.isUndefined(uut.cache['test'])
+      assert.isUndefined(uut.cache.test)
     })
   })
 })
-
