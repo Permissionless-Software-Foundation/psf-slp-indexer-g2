@@ -431,7 +431,7 @@ class IndexBlocks {
     try {
       const { slpData, txData } = data
       // console.log('slpData: ', slpData)
-      console.log('processData() starting. txData: ', JSON.stringify(txData, null, 2))
+      // console.log('processData() starting. txData: ', JSON.stringify(txData, null, 2))
 
       // Skip tokens with an unknown token type.
       // But mark the TX as 'null', to signal to wallets that the UTXO should
