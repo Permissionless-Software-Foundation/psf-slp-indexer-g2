@@ -48,7 +48,7 @@ class DAG {
       }
 
       const txData = await this.adapters.cache.get(txid)
-      console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
 
       // Exit immediately if endFound achieves true or false status.
       if (endFound === true || endFound === false) {
