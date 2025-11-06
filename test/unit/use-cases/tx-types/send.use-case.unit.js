@@ -636,6 +636,39 @@ describe('#send.js', () => {
       assert.equal(result.txs[0].qty, '0')
     })
 
+    it('should set nftHolder for simple NFT (Type 1, decimals=0, totalMinted=1) (lines 187-189)', async () => {
+      // Mock data - simple NFT with type=1, decimals=0, totalMinted=1
+      const tokenData = {
+        type: 1,
+        decimals: 0,
+        totalMinted: new BigNumber(1),
+        tokensInCirculationBN: new BigNumber(1),
+        totalBurned: new BigNumber(0),
+        txs: []
+      }
+
+      // Mock send data with vout[1] having addresses
+      const simpleNftSendData = cloneDeep(mockData.sendData01)
+      simpleNftSendData.txData.vout[1].scriptPubKey.addresses = ['bitcoincash:nftholder123']
+
+      // Mock databases
+      uut.adapters.tokenDb.getToken.reset()
+      uut.adapters.tokenDb.getToken.resolves(tokenData)
+
+      const diffBN = new BigNumber(0)
+      const sentBN = new BigNumber(1)
+      const spentBN = new BigNumber(1)
+
+      const result = await uut.updateTokenStats(
+        simpleNftSendData,
+        diffBN,
+        spentBN,
+        sentBN
+      )
+
+      assert.equal(result.nftHolder, 'bitcoincash:nftholder123')
+    })
+
     it('should catch and throw an error', async () => {
       try {
         // Force an error
@@ -683,3 +716,4 @@ describe('#send.js', () => {
     })
   })
 })
+

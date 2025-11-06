@@ -138,6 +138,26 @@ describe('#utils.js', () => {
       assert.equal(result[0].qty, '10000')
     })
 
+    it('should return balancesArray unchanged for baton type (line 74)', () => {
+      const batonUtxo = {
+        txid: 'baton-tx-123',
+        vout: 0,
+        type: 'baton',
+        tokenId: 'token-id-123'
+      }
+      const balancesArray = [
+        { tokenId: 'token-id-123', qty: '1000' }
+      ]
+      const tokenId = 'token-id-123'
+
+      const result = uut.subtractUtxoBalance(batonUtxo, balancesArray, tokenId)
+
+      assert.isArray(result)
+      assert.equal(result.length, 1)
+      assert.equal(result[0].qty, '1000') // Unchanged
+      assert.strictEqual(result, balancesArray) // Same reference
+    })
+
     it('should catch and throw errors', () => {
       try {
         uut.subtractUtxoBalance()

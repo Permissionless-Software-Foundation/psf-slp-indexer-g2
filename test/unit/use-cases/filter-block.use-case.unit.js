@@ -192,6 +192,41 @@ describe('#filter-block.js', () => {
       assert.equal(slpTxs[0], txs[4])
     })
 
+    it('should skip blacklisted tokens (line 133)', async () => {
+      const txs = [
+        'blacklisted-tx-123',
+        'normal-slp-tx-456'
+      ]
+
+      // First tx is SLP but blacklisted
+      uut.adapters.transaction.getTokenInfo.reset()
+      uut.adapters.transaction.getTokenInfo
+        .onCall(0)
+        .resolves({ tokenId: 'blacklisted-token-id' })
+        .onCall(1)
+        .resolves({ tokenId: 'normal-token-id' })
+
+      // Set blacklist check to return true for the first token
+      uut.adapters.blacklist.checkBlacklist.reset()
+      uut.adapters.blacklist.checkBlacklist
+        .onCall(0)
+        .returns(true) // blacklisted
+        .onCall(1)
+        .returns(false) // not blacklisted
+
+      sandbox.stub(uut, 'deleteBurnedUtxos').resolves(true)
+
+      const { slpTxs, nonSlpTxs } = await uut.filterSlpTxs(txs)
+
+      assert.isArray(slpTxs)
+      assert.isArray(nonSlpTxs)
+      // Blacklisted token should not be in slpTxs, but in nonSlpTxs
+      assert.equal(slpTxs.length, 1)
+      assert.equal(slpTxs[0], 'normal-slp-tx-456')
+      assert.equal(nonSlpTxs.length, 1)
+      assert.equal(nonSlpTxs[0], 'blacklisted-tx-123')
+    })
+
     it('should catch and throw errors', async () => {
       try {
         // From block 652,276

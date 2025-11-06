@@ -328,5 +328,92 @@ describe('#dag.js', () => {
       // The txid is added to dag before validation, so length will be at least 1
       assert.isAtLeast(result.dag.length, 1)
     })
+
+    it('should return early when parentTx found in DB with matching vout (lines 127-135)', async () => {
+      // Create mock data where parentTx.isValidSlp = true and vout matches
+      const childTx = {
+        txid: 'child-tx-123',
+        tokenType: 1,
+        tokenId: 'token-id-123',
+        vin: [{
+          txid: 'parent-tx-123',
+          vout: 1,
+          tokenQty: 1000,
+          tokenId: 'token-id-123'
+        }],
+        vout: []
+      }
+
+      const parentTx = {
+        txid: 'parent-tx-123',
+        tokenType: 1,
+        tokenId: 'token-id-123',
+        isValidSlp: true,
+        vin: [],
+        vout: [{
+          n: 1,
+          tokenQty: 1000
+        }]
+      }
+
+      uut.adapters.cache.get.reset()
+      uut.adapters.cache.get
+        .onCall(0).resolves(childTx)
+        .onCall(1).resolves(parentTx)
+
+      const txid = 'child-tx-123'
+      const tokenId = 'token-id-123'
+
+      const result = await uut.crawlDag(txid, tokenId)
+
+      assert.equal(result.isValid, true)
+      assert.isArray(result.dag)
+      assert.include(result.dag, 'parent-tx-123')
+      // Should return early, so should only have 2 calls (child and parent)
+      assert.equal(uut.adapters.cache.get.callCount, 2)
+    })
+
+    it('should invalidate NFT Genesis not originating from Group token (lines 156-163)', async () => {
+      // Create mock data where parentTx is NFT (tokenType !== 1) and vin[0].tokenQty === 0
+      const nftTx = {
+        txid: 'nft-tx-123',
+        tokenType: 65,
+        tokenId: 'nft-token-id-123',
+        vin: [{
+          txid: 'nft-genesis-tx-123',
+          vout: 1,
+          tokenQty: 1,
+          tokenId: 'nft-token-id-123'
+        }],
+        vout: []
+      }
+
+      const nftGenesisTx = {
+        txid: 'nft-genesis-tx-123',
+        tokenType: 65,
+        txType: 'GENESIS',
+        tokenId: 'nft-token-id-123',
+        vin: [{
+          txid: 'some-parent',
+          vout: 0,
+          tokenQty: 0, // No group token on vin[0]
+          tokenId: null
+        }],
+        vout: []
+      }
+
+      uut.adapters.cache.get.reset()
+      uut.adapters.cache.get
+        .onCall(0).resolves(nftTx)
+        .onCall(1).resolves(nftGenesisTx)
+
+      const txid = 'nft-tx-123'
+      const tokenId = 'nft-token-id-123'
+
+      const result = await uut.crawlDag(txid, tokenId)
+
+      assert.equal(result.isValid, false)
+      assert.deepEqual(result.dag, [])
+    })
   })
 })
