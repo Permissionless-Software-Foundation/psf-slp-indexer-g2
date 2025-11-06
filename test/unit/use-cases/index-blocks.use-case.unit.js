@@ -415,7 +415,7 @@ describe('#index-blocks.js', () => {
 
       // Mock process.exit to prevent actual exit
       uut.process.exit = sandbox.stub()
-      
+
       // Make rollbackDb throw an error that gets caught internally
       uut.adapters.dbCtrl.rollbackDb.rejects(new Error('unexpected error'))
 
@@ -648,4 +648,3 @@ describe('#index-blocks.js', () => {
     })
   })
 })
-

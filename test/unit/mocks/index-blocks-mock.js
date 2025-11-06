@@ -95,4 +95,3 @@ export default {
   slpTxUnsupportedType,
   pinClaim01
 }
-
