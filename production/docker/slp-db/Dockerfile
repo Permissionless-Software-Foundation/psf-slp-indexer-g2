@@ -74,6 +74,8 @@ RUN npm run docs
 #COPY restore-auto.sh restore-auto.sh
 #WORKDIR /home/safeuser/psf-slp-indexer
 
+COPY restore-auto.sh restore-auto.sh
+
 # Expose the port the API will be served on.
 EXPOSE 5010
 

@@ -24,6 +24,8 @@ export default {
     : [
         // FlexUSD
         'dd21be4532d93661e8ffe16db6535af0fb8ee1344d1fef81a193e2b4cfa9fbc9',
+        // FLEX Coin
+        'fb1813fd1a53c1bed61f15c0479cc5315501e6da6a4d06da9d8122c1a4fabb6c',
         // TribeOS
         '0df768b5485c72645de069b68f66d02205c26f827c608ef5ffa976266d753d50',
         // TribeOS Ghost Token

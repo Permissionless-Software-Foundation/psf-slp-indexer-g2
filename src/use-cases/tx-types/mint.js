@@ -206,11 +206,17 @@ class Mint {
       let thisAddr
       // let invalidInputFound = false
 
+      let batonTxid = null
+      let batonVout = null
+
       // Find the input address that spent the baton.
       const vin = data.txData.vin
       for (let i = 0; i < vin.length; i++) {
         thisAddr = vin[i].address
         console.log('removeBatonInAddr() thisAddr: ', thisAddr)
+
+        batonTxid = vin[i].txid
+        batonVout = vin[i].vout
 
         // Attempt to get the address from the database. If it doesn't exist,
         // then skip the address because it's not the one holding the minting
@@ -219,7 +225,7 @@ class Mint {
         try {
           addr = await this.adapters.addrDb.getAddr(thisAddr)
           console.log(
-            `removeBatonInAddr() ${thisAddr}: ${JSON.stringify(addr, null, 2)}`
+            // `removeBatonInAddr() ${thisAddr}: ${JSON.stringify(addr, null, 2)}`
           )
         } catch (err) {
           // Move on to the next address.
@@ -231,8 +237,8 @@ class Mint {
         baton = addr.utxos.filter(
           (x) =>
             x.type === 'baton' &&
-            x.txid === vin[i].txid &&
-            x.vout === vin[i].vout
+            x.txid === batonTxid &&
+            x.vout === batonVout
         )
         console.log('baton: ', baton)
 
@@ -253,7 +259,8 @@ class Mint {
         // console.log(`data.txData: ${JSON.stringify(data.txData, null, 2)}`)
         // console.log(`addr: ${JSON.stringify(addr, null, 2)}`)
         console.log(`vin: ${JSON.stringify(vin, null, 2)}`)
-        throw new Error('Minting baton not found. UTXO is not in database.')
+
+        throw new Error(`'Minting baton UTXO ${batonTxid}:${batonVout} is not in database.'`)
       }
 
       // Remove the baton UTXO from the array
