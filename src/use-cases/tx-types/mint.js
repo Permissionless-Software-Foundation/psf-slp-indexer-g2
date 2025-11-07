@@ -260,7 +260,8 @@ class Mint {
         // console.log(`addr: ${JSON.stringify(addr, null, 2)}`)
         console.log(`vin: ${JSON.stringify(vin, null, 2)}`)
 
-        throw new Error('Minting baton not found. UTXO is not in database.')
+        // throw new Error('Minting baton not found. UTXO is not in database.')
+        throw new Error(`Minting baton not found. UTXO ${batonTxid}:${batonVout} is not in database.`)
       }
 
       // Remove the baton UTXO from the array
