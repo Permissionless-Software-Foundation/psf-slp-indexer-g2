@@ -98,7 +98,7 @@ describe('#mint.js', () => {
 
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.equal(err.message, 'Minting baton not found. UTXO is not in database.')
+        assert.equal(err.message, 'Minting baton not found. UTXO 938cc18e618967d787897bbc64b9a8d201b94ec7c69b1a9949eab0433ba5cdf8:2 is not in database.')
       }
     })
   })
