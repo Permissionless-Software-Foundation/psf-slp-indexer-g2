@@ -7,4 +7,4 @@
 
 # Docker Container
 rm -rf /home/safeuser/psf-slp-db/leveldb/current/*
-cp -r /home/safeuser/psf-slp-db/leveldb/zips/home/safeuser/psf-slp-db/src/adapters/leveldb/current* /home/safeuser/psf-slp-db/leveldb/current/
+cp -r /home/safeuser/psf-slp-db/leveldb/zips/home/safeuser/psf-slp-db/src/adapters/leveldb/current/* /home/safeuser/psf-slp-db/leveldb/current/
