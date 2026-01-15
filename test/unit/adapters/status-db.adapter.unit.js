@@ -24,7 +24,7 @@ describe('#status-db', () => {
       const mockData = {
         startBlockHeight: 543375,
         syncedBlockHeight: 543400,
-        chainTipHeight: 543500
+        chainBlockHeight: 543500
       }
       sandbox.stub(uut.axios, 'get').resolves({ data: mockData })
 
@@ -44,7 +44,7 @@ describe('#status-db', () => {
 
       assert.equal(result.startBlockHeight, 543375)
       assert.equal(result.syncedBlockHeight, 543375)
-      assert.equal(result.chainTipHeight, 543500)
+      assert.equal(result.chainBlockHeight, 543500)
       assert.equal(uut.axios.post.called, true)
     })
   })
@@ -57,7 +57,7 @@ describe('#status-db', () => {
       const status = {
         startBlockHeight: 543375,
         syncedBlockHeight: 543400,
-        chainTipHeight: 543500
+        chainBlockHeight: 543500
       }
 
       const result = await uut.updateStatus(status)
@@ -74,7 +74,7 @@ describe('#status-db', () => {
         const status = {
           startBlockHeight: 543375,
           syncedBlockHeight: 543400,
-          chainTipHeight: 543500
+          chainBlockHeight: 543500
         }
 
         await uut.updateStatus(status)
