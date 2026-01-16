@@ -22,7 +22,22 @@ class Transaction {
     this.rpc = new RPC()
     this.slpParser = slpParser
     this.queue = new RetryQueue()
-    this.bchjs = new BCHJS()
+    
+    // Allow BCHJS to be passed in, or configure it with REST URL
+    if (localConfig.bchjs) {
+      this.bchjs = localConfig.bchjs
+    } else {
+      const bchjsConfig = {}
+      if (localConfig.restURL) {
+        bchjsConfig.restURL = localConfig.restURL
+      } else if (process.env.RESTURL) {
+        bchjsConfig.restURL = process.env.RESTURL
+      } else {
+        // Default to a dummy URL for testing purposes
+        bchjsConfig.restURL = 'https://rest.bitcoin.com/v2/'
+      }
+      this.bchjs = new BCHJS(bchjsConfig)
+    }
 
     // State
     this.tokenCache = {}
