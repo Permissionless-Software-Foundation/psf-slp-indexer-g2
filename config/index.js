@@ -36,5 +36,6 @@ export default {
         '6448381f9649ecacd8c30189cfbfee71a91b6b9738ea494fe33f8b8b51cbfca0'
       ],
 
-  txRestApiPort: process.env.TX_REST_API_PORT ? parseInt(process.env.TX_REST_API_PORT) : 5454
+  txRestApiPort: process.env.TX_REST_API_PORT ? parseInt(process.env.TX_REST_API_PORT) : 5454,
+  txRestApiIp: process.env.TX_REST_API_IP ? process.env.TX_REST_API_IP : 'localhost'
 }
