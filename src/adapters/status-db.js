@@ -40,7 +40,7 @@ class StatusDb {
       const statusData = {
         startBlockHeight: 543375,
         syncedBlockHeight: 543375,
-        chainTipHeight: biggestBlockHeight
+        chainBlockHeight: biggestBlockHeight
       }
 
       await this.axios.post(`${this.config.psfSlpDbUrl}/level/status`, {
@@ -57,12 +57,12 @@ class StatusDb {
     try {
       // Input validation: Make sure the status object has the expected properties.
       // This will throw an error if the properties are missing.
-      const { startBlockHeight, syncedBlockHeight, chainTipHeight } = status
+      const { startBlockHeight, syncedBlockHeight, chainBlockHeight } = status
 
       const newStatus = {
         startBlockHeight,
         syncedBlockHeight,
-        chainTipHeight
+        chainBlockHeight
       }
 
       await this.axios.put(`${this.config.psfSlpDbUrl}/level/status`, {
