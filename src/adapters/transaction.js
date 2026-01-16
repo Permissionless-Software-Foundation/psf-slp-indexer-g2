@@ -22,7 +22,7 @@ class Transaction {
     this.rpc = new RPC()
     this.slpParser = slpParser
     this.queue = new RetryQueue()
-    
+
     // Allow BCHJS to be passed in, or configure it with REST URL
     if (localConfig.bchjs) {
       this.bchjs = localConfig.bchjs
