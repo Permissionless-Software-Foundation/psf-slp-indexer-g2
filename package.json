@@ -14,7 +14,7 @@
   "type": "module",
   "dependencies": {
     "@chris.troutner/retry-queue": "1.0.11",
-    "@psf/bch-js": "7.1.10",
+    "@psf/bch-js": "7.1.11",
     "@psf/bitcoincash-zmq-decoder": "0.1.5",
     "axios": "1.12.2",
     "bignumber.js": "9.3.1",
