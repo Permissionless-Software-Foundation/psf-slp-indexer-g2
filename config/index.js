@@ -37,5 +37,8 @@ export default {
       ],
 
   txRestApiPort: process.env.TX_REST_API_PORT ? parseInt(process.env.TX_REST_API_PORT) : 5454,
-  txRestApiIp: process.env.TX_REST_API_IP ? process.env.TX_REST_API_IP : 'localhost'
+  txRestApiIp: process.env.TX_REST_API_IP ? process.env.TX_REST_API_IP : 'localhost',
+
+  // ipfs-file-pin-service settings
+  pinUrl: process.env.PIN_API_URL ? process.env.PIN_API_URL : 'http://172.17.0.1:5031'
 }
