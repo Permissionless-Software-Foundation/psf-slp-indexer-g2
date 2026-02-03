@@ -32,6 +32,13 @@ class StatusDb {
       // console.error('Error in StatusDb.getStatus(): ', err.message)
       console.log('State not found. Creating fresh state.')
 
+      // If exitOnMissingBackup is enabled, exit instead of creating new status
+      if (this.config.exitOnMissingBackup) {
+        console.log('EXIT_ON_MISSING_BACKUP is set. Status not found. Exiting instead of rolling back to genesis.')
+        console.log('This allows the process manager to restart and retry.')
+        process.exit(1)
+      }
+
       // Get the current block height
       const biggestBlockHeight = await this.retryQueue.addToQueue(this.rpc.getBlockCount, {})
       // console.log('Current chain block height: ', biggestBlockHeight)
