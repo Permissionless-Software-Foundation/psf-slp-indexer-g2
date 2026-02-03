@@ -36,6 +36,7 @@ describe('#status-db', () => {
 
     it('should create status if not found', async () => {
       // Mock dependencies
+      uut.config.exitOnMissingBackup = false
       sandbox.stub(uut.axios, 'get').rejects(new Error('not found'))
       sandbox.stub(uut.retryQueue, 'addToQueue').resolves(543500)
       sandbox.stub(uut.axios, 'post').resolves({ data: { success: true } })
@@ -46,6 +47,29 @@ describe('#status-db', () => {
       assert.equal(result.syncedBlockHeight, 543375)
       assert.equal(result.chainBlockHeight, 543500)
       assert.equal(uut.axios.post.called, true)
+    })
+
+    it('should exit if status not found and EXIT_ON_MISSING_BACKUP is set', async () => {
+      // Mock dependencies
+      uut.config.exitOnMissingBackup = true
+      sandbox.stub(uut.axios, 'get').rejects(new Error('not found'))
+      const exitStub = sandbox.stub(process, 'exit').callsFake(() => {
+        // Prevent actual exit but stop execution by throwing
+        throw new Error('process.exit called')
+      })
+      // Stub post to verify it's not called
+      sandbox.stub(uut.axios, 'post')
+
+      try {
+        await uut.getStatus()
+        assert.fail('Should have exited')
+      } catch (err) {
+        // Verify process.exit was called with exit code 1
+        assert.equal(exitStub.called, true)
+        assert.equal(exitStub.firstCall.args[0], 1)
+        // Verify that post was not called (should exit before creating new status)
+        assert.equal(uut.axios.post.called, false)
+      }
     })
   })
 

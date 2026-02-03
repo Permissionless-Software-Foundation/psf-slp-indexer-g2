@@ -40,5 +40,8 @@ export default {
   txRestApiIp: process.env.TX_REST_API_IP ? process.env.TX_REST_API_IP : 'localhost',
 
   // ipfs-file-pin-service settings
-  pinUrl: process.env.PIN_API_URL ? process.env.PIN_API_URL : 'http://172.17.0.1:5031'
+  pinUrl: process.env.PIN_API_URL ? process.env.PIN_API_URL : 'http://172.17.0.1:5031',
+
+  // Exit instead of rolling back to genesis if indexer is synced and backup is missing
+  exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP === 'true'
 }
