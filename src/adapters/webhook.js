@@ -21,6 +21,7 @@ class Webhook {
   async webhookNewClaim (claim) {
     try {
       const url = `${this.config.pinUrl}/ipfs/pin-claim`
+      console.log('webhook calling for new claim: ', url)
 
       await this.axios.post(url, claim)
 
