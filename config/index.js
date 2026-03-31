@@ -49,5 +49,7 @@ export default {
   pinUrl: process.env.PIN_API_URL ? process.env.PIN_API_URL : 'http://172.17.0.1:5031',
 
   // Exit instead of rolling back to genesis if indexer is synced and backup is missing
-  exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP === 'true'
+  exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP
+    ? process.env.EXIT_ON_MISSING_BACKUP === 'true'
+    : false
 }
