@@ -10,6 +10,7 @@ import 'dotenv/config'
 import Adapters from './src/adapters/adapters-index.js'
 import UseCases from './src/use-cases/use-cases-index.js'
 import Controllers from './src/controllers/controllers-index.js'
+import config from './config/index.js'
 
 // const EPOCH = 1000 // blocks between backups
 
@@ -25,7 +26,9 @@ async function start () {
     console.log('Starting SLP TX indexer...')
 
     let runTxIndexer = false
-    const seenTxs = []
+    const seenTxs = new Set()
+    const seenTxQueue = []
+    const seenTxMax = config.seenTxMax
 
     // Loop until the TX is started via REST API.
     do {
@@ -62,13 +65,15 @@ async function start () {
           // When a block comes in over ZMQ, it triggers the TX indexer to process each
           // TX in the block. Checking the TXID against the PTxDB is really slow. This
           // is a quick in-memory check, which is much faster.
-          if (seenTxs.includes(tx)) {
+          if (seenTxs.has(tx)) {
             // If the TXID has already been seen, skip it.
             continue
           } else {
-            seenTxs.push(tx)
-            if (seenTxs.length > 100000) {
-              seenTxs.shift()
+            seenTxs.add(tx)
+            seenTxQueue.push(tx)
+            if (seenTxQueue.length > seenTxMax) {
+              const oldTxid = seenTxQueue.shift()
+              seenTxs.delete(oldTxid)
             }
           }
 
