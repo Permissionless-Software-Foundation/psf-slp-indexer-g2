@@ -54,7 +54,7 @@ RUN git clone https://github.com/Permissionless-Software-Foundation/psf-slp-inde
 WORKDIR /home/safeuser/psf-slp-indexer-g2
 
 # For development: switch to unstable branch
-#RUN git checkout pin-ipfs
+RUN git checkout reduce-memory
 
 # Install dependencies
 RUN npm install
