@@ -427,8 +427,9 @@ class FilterBlock {
 
       // Loop through each entry in the unsorted array.
       do {
+        const thisIdx = i
         // The current txid being evaluated.
-        const thisTxid = unsortedAry[i]
+        const thisTxid = unsortedAry[thisIdx]
         i++
 
         // The last link in the DAG of chained TXs.
@@ -451,7 +452,7 @@ class FilterBlock {
             dagFound = true
 
             // Remove the txid from the unsortedAry.
-            unsortedAry = unsortedAry.filter((x) => x !== thisTxid)
+            unsortedAry.splice(thisIdx, 1)
             // console.log(`Removed ${thisTxid} from unsortedAry: ${JSON.stringify(unsortedAry, null, 2)}`)
 
             // Add the txid to the end of the chainedAry.
@@ -505,7 +506,8 @@ class FilterBlock {
       // No SLP txids in the array? Exit.
       // if (!slpTxs.length) return []
 
-      let sortedTxids = []
+      const sortedTxids = []
+      const sortedTxidSet = new Set()
       const independentTxids = []
       // let i = 0
 
@@ -559,24 +561,17 @@ class FilterBlock {
           // If the current TXID has a parent or a child, then the chainedArray
           // will have a list of sorted TXIDs.
           if (hasParent || hasChild) {
-            // Add the chained Array to the sortedTxids array.
-            sortedTxids = sortedTxids.concat(sortedArray)
+            // Add unique txids from the chained array.
+            for (let j = 0; j < sortedArray.length; j++) {
+              const sortedTxid = sortedArray[j]
+              if (!sortedTxidSet.has(sortedTxid)) {
+                sortedTxidSet.add(sortedTxid)
+                sortedTxids.push(sortedTxid)
+              }
+            }
 
-            // Remove duplicate entries from the sortedTxid array.
-            // https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-            sortedTxids = [...new Set(sortedTxids)]
-          }
-
-          // Ensure that any txids in independentTxids or independentTxids are
-          // removed from the slpTxs array, before continuing the loop.
-          for (let j = 0; j < sortedTxids.length; j++) {
-            slpTxs = slpTxs.filter((x) => x !== sortedTxids[j])
-            // console.log(`filter ${j} slpTxs: ${JSON.stringify(slpTxs, null, 2)}`)
-          }
-          // Dev Note: CT 10/04/23 I don't think this code paragraph is ever executed.
-          for (let j = 0; j < independentTxids.length; j++) {
-            slpTxs = slpTxs.filter((x) => x !== sortedTxids[j])
-            // console.log(`filter ${j} slpTxs: ${JSON.stringify(slpTxs, null, 2)}`)
+            // Remove processed txids from slpTxs in a single pass.
+            slpTxs = slpTxs.filter((x) => !sortedTxidSet.has(x))
           }
 
           // console.log(
@@ -593,11 +588,15 @@ class FilterBlock {
       // console.log(`nonSlpTxs: ${nonSlpTxs.length}`)
 
       // Combine arrays with the independent txids first.
-      let combined = independentTxids.concat(sortedTxids)
-
-      // Ensure there are no duplicate TXIDs.
-      // https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
-      combined = [...new Set(combined)]
+      const combined = independentTxids.slice()
+      const combinedSet = new Set(combined)
+      for (let i = 0; i < sortedTxids.length; i++) {
+        const txid = sortedTxids[i]
+        if (!combinedSet.has(txid)) {
+          combinedSet.add(txid)
+          combined.push(txid)
+        }
+      }
 
       return { combined, nonSlpTxs }
     } catch (err) {

@@ -38,10 +38,18 @@ export default {
 
   txRestApiPort: process.env.TX_REST_API_PORT ? parseInt(process.env.TX_REST_API_PORT) : 5454,
   txRestApiIp: process.env.TX_REST_API_IP ? process.env.TX_REST_API_IP : 'localhost',
+  seenTxMax: process.env.SEEN_TX_MAX ? parseInt(process.env.SEEN_TX_MAX) : 100000,
+  zmqTxQueueMax: process.env.ZMQ_TX_QUEUE_MAX ? parseInt(process.env.ZMQ_TX_QUEUE_MAX) : 50000,
+  zmqBlockQueueMax: process.env.ZMQ_BLOCK_QUEUE_MAX ? parseInt(process.env.ZMQ_BLOCK_QUEUE_MAX) : 1000,
+  txCacheMax: process.env.TX_CACHE_MAX ? parseInt(process.env.TX_CACHE_MAX) : 100000,
+  tokenCacheMax: process.env.TOKEN_CACHE_MAX ? parseInt(process.env.TOKEN_CACHE_MAX) : 100000,
+  localTxCacheMax: process.env.LOCAL_TX_CACHE_MAX ? parseInt(process.env.LOCAL_TX_CACHE_MAX) : 100000,
 
   // ipfs-file-pin-service settings
   pinUrl: process.env.PIN_API_URL ? process.env.PIN_API_URL : 'http://172.17.0.1:5031',
 
   // Exit instead of rolling back to genesis if indexer is synced and backup is missing
-  exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP === 'true'
+  exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP
+    ? process.env.EXIT_ON_MISSING_BACKUP === 'true'
+    : false
 }

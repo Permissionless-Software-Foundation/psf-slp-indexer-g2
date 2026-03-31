@@ -6,6 +6,7 @@
 // Local libraries
 import Transaction from './transaction.js'
 import TxDb from './tx-db.js'
+import config from '../../config/index.js'
 
 class Cache {
   constructor (localConfig = {}) {
@@ -15,13 +16,29 @@ class Cache {
 
     this.cache = {}
     this.cacheCnt = 0
+    this.cacheKeys = []
+    this.cacheEvictions = 0
+    this.localTxCacheMax = config.localTxCacheMax
   }
 
   // Save a new entry into the cache.
   put (key, value) {
     if (typeof key !== 'string') throw new Error('key must be a string')
 
+    if (!this.cache[key]) {
+      this.cacheKeys.push(key)
+    }
     this.cache[key] = value
+
+    // Keep cache bounded to prevent memory spikes.
+    if (this.cacheKeys.length > this.localTxCacheMax) {
+      const oldestKey = this.cacheKeys.shift()
+      delete this.cache[oldestKey]
+      this.cacheEvictions++
+      if (this.cacheEvictions % 1000 === 0) {
+        console.log(`local tx cache evictions: ${this.cacheEvictions}`)
+      }
+    }
   }
 
   // Get the tx data from the full node if it's not already in the cache.
@@ -60,9 +77,10 @@ class Cache {
       console.log(`tx cache has ${this.cacheCnt} cached txs`)
     }
 
-    // Flush the cache once it gets too big, to same on memory.
+    // Backward compatible hard reset after very high churn.
     if (this.cacheCnt > 1000000) {
       this.cache = {}
+      this.cacheKeys = []
       this.cacheCnt = 0
     }
 
@@ -71,6 +89,7 @@ class Cache {
 
   // Delete an entry from the cache
   delete (key) {
+    this.cacheKeys = this.cacheKeys.filter((x) => x !== key)
     delete this.cache[key]
   }
 }

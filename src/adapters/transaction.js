@@ -15,6 +15,7 @@ import RetryQueue from '@chris.troutner/retry-queue'
 
 // Local libraries
 import RPC from './rpc.js'
+import config from '../../config/index.js'
 
 class Transaction {
   constructor (localConfig = {}) {
@@ -22,6 +23,7 @@ class Transaction {
     this.rpc = new RPC()
     this.slpParser = slpParser
     this.queue = new RetryQueue()
+    this.config = config
 
     // Allow BCHJS to be passed in, or configure it with REST URL
     if (localConfig.bchjs) {
@@ -42,8 +44,12 @@ class Transaction {
     // State
     this.tokenCache = {}
     this.tokenCacheCnt = 0
+    this.tokenCacheKeys = []
+    this.tokenCacheEvictions = 0
     this.txCache = {}
     this.txCacheCnt = 0
+    this.txCacheKeys = []
+    this.txCacheEvictions = 0
 
     // Bind 'this' object to all subfunctions
     this.get = this.get.bind(this)
@@ -759,15 +765,27 @@ class Transaction {
     // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
     this.tokenCache[txid] = tokenData
+    this.tokenCacheKeys.push(txid)
     this.tokenCacheCnt++
     if (this.tokenCacheCnt % 100 === 0) {
       console.log(`decodeOpReturn cache has ${this.tokenCacheCnt} cached txs`)
     }
 
-    // Clear the token cache if it gets too big. Prevents memory leaks.
+    // Backward compatible hard reset after very high churn.
     if (this.tokenCacheCnt > 1000000) {
       this.tokenCache = {}
+      this.tokenCacheKeys = []
       this.tokenCacheCnt = 0
+    }
+
+    // Keep cache bounded to prevent memory spikes.
+    if (this.tokenCacheKeys.length > this.config.tokenCacheMax) {
+      const oldestKey = this.tokenCacheKeys.shift()
+      delete this.tokenCache[oldestKey]
+      this.tokenCacheEvictions++
+      if (this.tokenCacheEvictions % 1000 === 0) {
+        console.log(`decodeOpReturn cache evictions: ${this.tokenCacheEvictions}`)
+      }
     }
 
     return tokenData
@@ -913,15 +931,27 @@ class Transaction {
 
       // Add the result to the cache.
       this.txCache[txid] = txData
+      this.txCacheKeys.push(txid)
       this.txCacheCnt++
       if (this.txCacheCnt % 1000 === 0) {
         console.log(`txCache has ${this.txCacheCnt} cached txs`)
       }
 
-      // Clear the token cache if it gets too big. Prevents memory leaks.
+      // Backward compatible hard reset after very high churn.
       if (this.txCacheCnt > 1000000) {
         this.txCache = {}
+        this.txCacheKeys = []
         this.txCacheCnt = 0
+      }
+
+      // Keep cache bounded to prevent memory spikes.
+      if (this.txCacheKeys.length > this.config.txCacheMax) {
+        const oldestKey = this.txCacheKeys.shift()
+        delete this.txCache[oldestKey]
+        this.txCacheEvictions++
+        if (this.txCacheEvictions % 1000 === 0) {
+          console.log(`txCache evictions: ${this.txCacheEvictions}`)
+        }
       }
 
       return txData

@@ -173,7 +173,7 @@ class IndexBlocks {
   // times in a row.
   async processSlpTxs (slpTxs, blockHeight) {
     try {
-      const errors = [] // Track errors
+      const errors = new Map() // Track error count by txid
 
       // Loop through each tx in the slpTxs array, until all the TXs have been
       // removed from the array.
@@ -202,28 +202,12 @@ class IndexBlocks {
           // Move the tx to the back of the queue.
           slpTxs.push(tx)
 
-          // Get the error object for this tx.
-          const errObj = errors.filter((x) => x.tx === tx)
-
-          // Create a new error object if it doesn't exist.
-          if (!errObj.length) {
-            const newErrObj = {
-              tx,
-              cnt: 0
-            }
-
-            errors.push(newErrObj)
-
-            errObj.push(newErrObj)
-          } else {
-            // Increment the error count for this tx.
-            errObj[0].cnt++
-          }
-
-          console.log(`Error count for ${tx}: ${errObj[0].cnt}`)
+          const nextErrCnt = errors.has(tx) ? errors.get(tx) + 1 : 0
+          errors.set(tx, nextErrCnt)
+          console.log(`Error count for ${tx}: ${nextErrCnt}`)
 
           const retryCnt = this.RETRY_CNT
-          if (errObj[0].cnt > retryCnt) {
+          if (nextErrCnt > retryCnt) {
             await this.handleProcessFailure(blockHeight, tx, err.message)
             throw new Error(
               `Failed to process TXID ${tx} after ${retryCnt} tries.`

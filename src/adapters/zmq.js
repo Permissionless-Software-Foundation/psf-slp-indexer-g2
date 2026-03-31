@@ -22,6 +22,8 @@ class ZMQ {
     // State
     this.txQueue = []
     this.blockQueue = []
+    this.txQueueDrops = 0
+    this.blockQueueDrops = 0
 
     // Bind 'this' object to subfunctions
     this.connect = this.connect.bind(this)
@@ -90,6 +92,13 @@ class ZMQ {
         // console.log(`txd: ${JSON.stringify(txd, null, 2)}`)
         // console.log(`txd.format.txid: ${txd.format.txid}`)
         this.txQueue.push(txd.format.txid)
+        if (this.txQueue.length > this.config.zmqTxQueueMax) {
+          this.txQueue.shift()
+          this.txQueueDrops++
+        }
+        if (this.txQueueDrops > 0 && this.txQueueDrops % 100 === 0) {
+          console.log(`ZMQ TX queue drops: ${this.txQueueDrops}, current depth: ${this.txQueue.length}`)
+        }
         // console.log(`txQueue length: ${this.txQueue.length}`)
       } else if (decoded === 'rawblock') {
         // Process new blocks
@@ -97,6 +106,13 @@ class ZMQ {
         const blk = this.bchZmqDecoder.decodeBlock(message)
         console.log(`blk: ${JSON.stringify(blk, null, 2)}`)
         this.blockQueue.push(blk)
+        if (this.blockQueue.length > this.config.zmqBlockQueueMax) {
+          this.blockQueue.shift()
+          this.blockQueueDrops++
+        }
+        if (this.blockQueueDrops > 0 && this.blockQueueDrops % 10 === 0) {
+          console.log(`ZMQ block queue drops: ${this.blockQueueDrops}, current depth: ${this.blockQueue.length}`)
+        }
       }
 
       return true
