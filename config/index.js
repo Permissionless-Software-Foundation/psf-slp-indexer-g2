@@ -51,5 +51,10 @@ export default {
   // Exit instead of rolling back to genesis if indexer is synced and backup is missing
   exitOnMissingBackup: process.env.EXIT_ON_MISSING_BACKUP
     ? process.env.EXIT_ON_MISSING_BACKUP === 'true'
-    : false
+    : false,
+
+  // Blocks between zip LevelDB backups (IBD and ZMQ/phase2 paths).
+  dbBackupEpoch: process.env.DB_BACKUP_EPOCH
+    ? parseInt(process.env.DB_BACKUP_EPOCH, 10)
+    : 1000
 }

@@ -14,11 +14,10 @@ import RetryQueue from '@chris.troutner/retry-queue'
 import 'dotenv/config'
 
 // Local libraries
+import config from './config/index.js'
 import Adapters from './src/adapters/adapters-index.js'
 import UseCases from './src/use-cases/use-cases-index.js'
 import Controllers from './src/controllers/controllers-index.js'
-
-const EPOCH = 1000 // blocks between backups
 
 async function start () {
   try {
@@ -85,9 +84,12 @@ async function start () {
         }
 
         // Create a zip-file backup every 'epoch' of blocks
-        if (nextBlockHeight % EPOCH === 0) {
+        const backedUp = await useCases.backup.backupIfNeeded(
+          nextBlockHeight,
+          config.dbBackupEpoch
+        )
+        if (backedUp) {
           console.log(`\n\nCreating zip archive of database at block ${nextBlockHeight}\n`)
-          await adapters.dbCtrl.backupDb(nextBlockHeight, EPOCH)
         }
 
         // Get the block height of the tip of the chain.
@@ -144,6 +146,9 @@ async function start () {
 
         // Process the block.
         await useCases.indexBlocks.processBlock(blockHeight)
+
+        // Zip backups at epoch boundaries in phase 2 (ZMQ tip) as well as IBD.
+        await useCases.backup.backupIfNeeded(blockHeight, config.dbBackupEpoch)
       }
 
       // Periodically print to the console to indicate that the ZMQ is being
